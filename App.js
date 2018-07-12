@@ -6,66 +6,110 @@
  * @flow
  */
 
-import React, { Component } from 'react';
-import Camera from 'react-native-camera';
-import { Platform, StyleSheet, Text, View, Dimensions} from 'react-native';
+import React, {Component} from 'react';
+import {
+	Platform,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native';
+import GridLayout from 'react-native-layout-grid';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+const data = [
+	{
+		"name": "Miranda Kerr",
+		"prob": 0.37
+	},
+	{
+		"name": "Natalia Vodianova",
+		"prob": 0.14
+	},
+	{
+		"name": "Lizzy Greene",
+		"prob": 0.11
+	},
+	{
+		"name": "Paula Riemann",
+		"prob": 0.1
+	},
+	{
+		"name": "Amanda Steele",
+		"prob": 0.04
+	}
+];
 
-type Props = {};
-export default class App extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>Todaf get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-        <Camera
-          ref={(cam) => {
-            this.camera = cam;
-          }}
-          style={styles.preview}
-          aspect={Camera.constants.Aspect.fill}>
-          <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
-        </Camera>
-      </View>
-    );
-  }
+export default class App extends Component<{}> {
 
-  takePicture() {
-    this.camera.capture()
-      .then((data) => console.log(data))
-      .catch(err => console.error(err));
-  }
+	constructor() {
+		super();
+		this.makeRequest();
+	}
+
+	async makeRequest() {
+		// alert(data[0].name);
+
+		// await Promise.all([getImageByName(), anotherCall()]);
+
+		data.map(item => {
+			return alert(item.name)
+		})
+	};
+
+	renderGridItem = (item) => (
+			<View style={styles.item}>
+				<View style={styles.flex}/>
+				<Text style={styles.name}>
+					{item.name}
+				</Text>
+			</View>
+	);
+
+	render() {
+		const items = [];
+		for (let x = 1; x <= 30; x++) {
+			items.push({
+				name: `Grid ${x}`
+			});
+		}
+		return (
+				<View style={styles.container}>
+					<Text style={styles.welcome}>
+						Grid Layout
+					</Text>
+					<View style={styles.flex}>
+						<GridLayout
+								items={items}
+								itemsPerRow={2}
+								renderItem={this.renderGridItem}
+						/>
+					</View>
+				</View>
+		);
+	}
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  preview: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+	container: {
+		flex: 1,
+		marginTop: 20,
+		backgroundColor: '#F5FCFF',
+	},
+	welcome: {
+		fontSize: 20,
+		textAlign: 'center',
+		margin: 10,
+	},
+	flex: {
+		flex: 1,
+	},
+	item: {
+		height: 150,
+		backgroundColor: '#CCCCCC',
+		padding: 10,
+	},
+	name: {
+		fontSize: 12,
+		textAlign: 'center',
+		color: '#000000'
+	},
 });
