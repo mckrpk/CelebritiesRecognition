@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 	}
 });
 
-const baseUrl = 'https://www.google.pl/search?q=';
+const getImageSearchQueryUrl = (fullName) => `https://www.google.pl/search?q=${fullName}&source=lnms&tbm=isch`;
 let webViewUrl = '';
 let actorNamesArray = [];
 
@@ -61,13 +61,6 @@ class CameraScreen extends Component {
 					</Camera>
 				</View>
 		);
-	}
-
-	testPress() {
-		// alert('ok it works');
-		console.log("test method");
-		webViewUrl = baseUrl + 'Adam Sandler';
-		this.props.navigation.push('Details');
 	}
 
 	takePicture() {
@@ -97,7 +90,7 @@ class CameraScreen extends Component {
 			return res.json();
 		}).then(myjson => {
 			console.log('Got celebrities-----------' + myjson.faces[0].celebrity);
-			webViewUrl = baseUrl + myjson.faces[0].celebrity[0].name;
+			webViewUrl = getImageSearchQueryUrl(myjson.faces[0].celebrity[0].name);
 			actorNamesArray = myjson.faces[0].celebrity.map(item => item.name);
 			console.log(`actor names: ${actorNamesArray}`);
 			console.log(myjson.faces[0].celebrity);
@@ -113,20 +106,19 @@ class DetailsScreen extends React.Component {
 						style={{flex: 1, paddingTop: 20, backgroundColor: 'white'}}
 						indicator={this._renderTitleIndicator()}
 				>
-					<View style={{backgroundColor: 'cadetblue'}}>
-						<WebView
-								source={{uri: webViewUrl}}
-								style={{marginTop: 0}}
-						/>
-					</View>
-					<View style={{backgroundColor: 'cornflowerblue'}}>
-						<Text>page two</Text>
-					</View>
-					<View style={{backgroundColor: '#1AA094'}}>
-						<Text>page three</Text>
-					</View>
+					{this.renderPagerItem()}
 				</IndicatorViewPager>
 		);
+	}
+
+	renderPagerItem() {
+		return actorNamesArray.map((fullName , index)=> <View key={index}>
+					<WebView
+							source={{uri: getImageSearchQueryUrl(fullName)}}
+							style={{marginTop: 0}}
+					/>
+				</View>
+		)
 	}
 
 	_renderTitleIndicator = () => <PagerTitleIndicator titles={actorNamesArray}/>;
