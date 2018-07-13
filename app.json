@@ -1,4 +1,7 @@
 {
   "name": "CelebritiesRecognition",
-  "displayName": "CelebritiesRecognition"
+  "displayName": "CelebritiesRecognition",
+  "expo": {
+    "sdkVersion": "27.0.0"
+  }
 }

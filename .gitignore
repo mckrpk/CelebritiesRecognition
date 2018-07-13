@@ -56,3 +56,8 @@ buck-out/
 *.jsbundle
 
 package-lock\.json
+
+*.project
+*.classpath
+*.prefs
+.vscode/

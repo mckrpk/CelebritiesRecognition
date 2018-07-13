@@ -1,48 +1,8 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
 
 import React, { Component } from 'react';
 import Camera from 'react-native-camera';
-import { Platform, StyleSheet, Text, View, Dimensions} from 'react-native';
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-type Props = {};
-export default class App extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>Todaf get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-        <Camera
-          ref={(cam) => {
-            this.camera = cam;
-          }}
-          style={styles.preview}
-          aspect={Camera.constants.Aspect.fill}>
-          <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
-        </Camera>
-      </View>
-    );
-  }
-
-  takePicture() {
-    this.camera.capture()
-      .then((data) => console.log(data))
-      .catch(err => console.error(err));
-  }
-}
+import { Platform, StyleSheet, Text, View, Dimensions, TouchableHighlight, TouchableOpacity, Image, WebView } from 'react-native';
+import { createStackNavigator } from 'react-navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -57,15 +17,99 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  }
 });
+
+const baseUrl = 'https://www.google.pl/search?q='
+var webViewUrl = '';
+
+class CameraScreen extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Camera
+          ref={(cam) => {
+            this.camera = cam;
+          }}
+          style={styles.preview}
+          aspect={Camera.constants.Aspect.fill}
+          type='front'>
+          <TouchableOpacity onPress={() => this.takePicture()}>
+            <Image
+              source={require('./img/capture.png')}
+              style={{ width: 80, height: 80 }}
+            />
+          </TouchableOpacity>
+        </Camera>
+      </View>
+    );
+  }
+
+  testPress() {
+    // alert('ok it works');
+    console.log("test method");
+    webViewUrl = baseUrl + 'Adam Sandler';
+    this.props.navigation.push('Details');
+  }
+
+  takePicture() {
+    this.camera.capture()
+      .then((data) => {
+        console.log(data)
+        this.sendRequest(data.path);
+      })
+      .catch(err => console.error(err));
+  }
+
+  sendRequest(imagePath) {
+    const data = new FormData();
+    data.append('models', 'celebrities');
+    data.append('api_user', '1376917843');
+    data.append('api_secret', 'qHBY6kF5m6LcJrMusp9g');
+    data.append('media', {
+      uri: imagePath,
+      type: 'image/jpeg',
+      name: 'testPhotoName'
+    });
+
+    fetch('https://api.sightengine.com/1.0/check.json', {
+      method: 'post',
+      body: data
+    }).then(res => {
+      return res.json();
+    }).then(myjson => { 
+      console.log('Got celebrities-----------'+ myjson.faces[0].celebrity);
+      webViewUrl = baseUrl + myjson.faces[0].celebrity[0].name;
+      console.log(myjson.faces[0].celebrity)
+      this.props.navigation.push('Details');
+    });
+  }
+}
+
+class DetailsScreen extends React.Component {
+  render() {
+    return (
+      <WebView
+        source={{uri: webViewUrl}}
+        style={{marginTop: 0}}
+      />
+    );
+  }
+}
+
+const RootStack = createStackNavigator(
+  {
+    Camera: CameraScreen,
+    Details: DetailsScreen,
+  },
+  {
+    initialRouteName: 'Camera',
+  }
+);
+
+
+export default class App extends Component {
+  render() {
+    return <RootStack />;
+  }
+}
