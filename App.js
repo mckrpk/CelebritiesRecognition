@@ -7,13 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {
-	Platform,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
-import GridLayout from 'react-native-layout-grid';
+import {StyleSheet, Text, View, WebView,} from 'react-native';
 
 const data = [
 	{
@@ -46,43 +40,15 @@ export default class App extends Component<{}> {
 	}
 
 	async makeRequest() {
-		// alert(data[0].name);
-
-		// await Promise.all([getImageByName(), anotherCall()]);
-
-		data.map(item => {
-			return alert(item.name)
-		})
 	};
 
-	renderGridItem = (item) => (
-			<View style={styles.item}>
-				<View style={styles.flex}/>
-				<Text style={styles.name}>
-					{item.name}
-				</Text>
-			</View>
-	);
-
 	render() {
-		const items = [];
-		for (let x = 1; x <= 30; x++) {
-			items.push({
-				name: `Grid ${x}`
-			});
-		}
 		return (
 				<View style={styles.container}>
-					<Text style={styles.welcome}>
-						Grid Layout
-					</Text>
-					<View style={styles.flex}>
-						<GridLayout
-								items={items}
-								itemsPerRow={2}
-								renderItem={this.renderGridItem}
-						/>
-					</View>
+					<WebView
+							source={{uri: 'https://github.com/facebook/react-native'}}
+							style={{marginTop: 20}}
+					/>
 				</View>
 		);
 	}
